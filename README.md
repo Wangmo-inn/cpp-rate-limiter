@@ -1,30 +1,83 @@
-\# Designing of Rate Limiter
+# Designing of Rate Limiter
 
+A simple, thread-safe C++ implementation of the **5 core rate-limiting algorithms** frequently discussed in System Design interviews.
 
+## Algorithms Implemented
 
-A simple, thread-safe C++ implementation of the 5 core rate-limiting algorithms frequently discussed in System Design interviews.
+### 1. Token Bucket
+Allows bursts of traffic while maintaining an average request rate.
 
+- Tokens are added at a constant rate.
+- Each request consumes one token.
+- Requests are rejected when no tokens are available.
+- Supports controlled bursts up to the bucket capacity.
 
+### 2. Leaky Bucket
+Smooths out bursty traffic into a steady stream.
 
-\## Algorithms Implemented
+- Requests are added to a queue.
+- Requests are processed at a fixed rate.
+- Excess requests are rejected when the queue is full.
+- Provides a predictable output rate.
 
-1\. \*\*Token Bucket:\*\* Allows bursts of traffic. Tokens are added at a constant rate.
+### 3. Fixed Window Counter
+Divides time into fixed intervals and limits the number of requests in each interval.
 
-2\. \*\*Leaky Bucket:\*\* Smooths out bursty traffic into a steady stream.
+- Maintains a request counter for the current window.
+- Counter resets when the window expires.
+- Simple and memory efficient.
+- Can allow bursts at window boundaries.
 
-3\. \*\*Fixed Window Counter:\*\* Simple but prone to edge-case burst spikes.
+### 4. Sliding Window Log
+Provides accurate rate limiting using individual request timestamps.
 
-4\. \*\*Sliding Window Log:\*\* 100% accurate enforcement, but memory-intensive.
+- Stores the timestamp of every request.
+- Removes timestamps outside the current time window.
+- Provides accurate enforcement.
+- Requires more memory as request timestamps are stored.
 
-5\. \*\*Sliding Window Counter:\*\* Hybrid approach that fixes the Fixed Window flaw while remaining memory-efficient.
+### 5. Sliding Window Counter
+A hybrid approach that combines the efficiency of Fixed Window Counter with the smoother behavior of a Sliding Window.
 
+- Maintains request counts for the current and previous windows.
+- Uses weighted counts to estimate requests in the current sliding window.
+- More memory efficient than Sliding Window Log.
+- Reduces boundary burst problems.
 
+## Comparison
 
-\## How to Run
+| Algorithm | Burst Handling | Accuracy | Memory Usage | Main Advantage |
+|---|---|---|---|---|
+| Token Bucket | Allows bursts | High | Low | Handles burst traffic |
+| Leaky Bucket | Smooths bursts | High | Low/Medium | Constant output rate |
+| Fixed Window Counter | Boundary bursts possible | Medium | Very Low | Simple and efficient |
+| Sliding Window Log | Controlled | Very High | High | Accurate enforcement |
+| Sliding Window Counter | Controlled | High | Low | Balance of accuracy and memory |
 
-This project uses standard C++ libraries and has no external dependencies. 
+## Thread Safety
 
+The implementation uses C++ synchronization primitives to make the rate limiters thread-safe.
 
+Key components include:
 
-Compile and run using g++:
+- `std::mutex`
+- `std::lock_guard`
+- `std::chrono`
+- STL containers such as `std::queue` and `std::deque`
 
+This prevents race conditions when multiple threads access the rate limiter concurrently.
+
+## How It Works
+
+A typical rate-limiting flow looks like:
+
+```text
+Client
+   |
+   v
+Rate Limiter
+   |
+   +---- Request Allowed ----> Backend Service
+   |
+   +---- Request Rejected ---> HTTP 429
+                               Too Many Requests
