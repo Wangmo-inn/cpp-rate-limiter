@@ -83,6 +83,164 @@ Rate Limiter
                                Too Many Requests
 ```
 
+When a request arrives, the rate limiter checks whether the request is allowed according to the selected algorithm.
+
+If the limit has been exceeded, the request is rejected.
+
+## Example
+
+For a limit of **5 requests per second**:
+
+```text
+Request 1  -> Allowed
+Request 2  -> Allowed
+Request 3  -> Allowed
+Request 4  -> Allowed
+Request 5  -> Allowed
+Request 6  -> Rejected
+```
+
+The exact behavior depends on the rate-limiting algorithm being used.
+
+## Project Structure
+
+```text
+Rate-Limiter/
+│
+├── main.cpp
+├── token_bucket.cpp
+├── leaky_bucket.cpp
+├── fixed_window.cpp
+├── sliding_window_log.cpp
+├── sliding_window_counter.cpp
+│
+└── README.md
+```
+
+> Update the project structure if your implementation uses different file names.
+
+## How to Run
+
+This project uses only standard C++ libraries and has **no external dependencies**.
+
+### Compile
+
+Using `g++`:
+
+```bash
+g++ -std=c++17 -pthread main.cpp -o rate_limiter
+```
+
+If the implementations are split across multiple `.cpp` files:
+
+```bash
+g++ -std=c++17 -pthread *.cpp -o rate_limiter
+```
+
+### Run
+
+Linux/macOS:
+
+```bash
+./rate_limiter
+```
+
+Windows:
+
+```bash
+rate_limiter.exe
+```
+
+## Key Concepts
+
+This project demonstrates:
+
+* Rate Limiting
+* Token Bucket
+* Leaky Bucket
+* Fixed Window Counter
+* Sliding Window Log
+* Sliding Window Counter
+* Thread Safety
+* Concurrency
+* Mutex-based synchronization
+* Time-based calculations
+* Queue-based request management
+* Traffic shaping
+* Burst handling
+* Memory vs. accuracy trade-offs
+
+## Why Rate Limiting?
+
+Rate limiting is commonly used to:
+
+* Prevent API abuse
+* Protect backend services from excessive traffic
+* Control resource consumption
+* Prevent sudden traffic spikes
+* Enforce API quotas
+* Maintain service availability
+
+## System Design Trade-offs
+
+```text
+Token Bucket
+    |
+    +--> Good for handling bursts
+
+
+Leaky Bucket
+    |
+    +--> Good for smooth and predictable traffic
+
+
+Fixed Window Counter
+    |
+    +--> Simple and memory efficient
+    +--> Can suffer from boundary bursts
+
+
+Sliding Window Log
+    |
+    +--> Highly accurate
+    +--> Higher memory usage
+
+
+Sliding Window Counter
+    |
+    +--> Memory efficient
+    +--> Better handling of boundary bursts
+    +--> Good balance between accuracy and performance
+```
+
+## Technologies Used
+
+* C++17
+* STL
+* Multithreading
+* Mutex
+* `std::chrono`
+* `std::queue`
+* `std::deque`
+
+## Future Improvements
+
+* Per-user rate limiting
+* Per-IP rate limiting
+* Configurable limits
+* Redis-based distributed rate limiting
+* HTTP API integration
+* Unit testing
+* Performance benchmarking
+* Monitoring and metrics
+* Distributed rate limiting across multiple servers
+
+## Learning Objective
+
+The goal of this project is to understand and implement commonly used rate-limiting algorithms while exploring their **performance, memory, accuracy, concurrency, and system-design trade-offs**.
+
+It also serves as a practical implementation for **C++ and System Design interview preparation**.
+
 ## Author
 
 **Rigzin Wangmo**
