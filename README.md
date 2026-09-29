@@ -81,3 +81,9 @@ Rate Limiter
    |
    +---- Request Rejected ---> HTTP 429
                                Too Many Requests
+```
+
+## Author
+
+**Rigzin Wangmo**
+[GitHub](https://github.com/Wangmo-inn/cpp-rate-limiter)
